@@ -29,7 +29,7 @@ def GetPanoByID_full(ID, DIR):
         for col in col_range:
             patch = cv2.imread('buffer_%s/image_%d_%d.jpg'%(ID, row, col))
             img[row*512:(row+1)*512, col*512:(col+1)*512, :] = patch
-    cv2.imwrite('%s/pano_%s.jpg'%(DIR, ID), img)
+    cv2.imwrite('%s/pano_%s.jpg'%(DIR, ID), img[:-256, :])
 
     subprocess.call('rm -r buffer_%s'%(ID), shell=True)
             
