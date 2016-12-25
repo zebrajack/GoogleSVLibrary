@@ -11,8 +11,8 @@ import os
 import shutil
 
 
-BaseUri = 'http://maps.google.com/cbk'
-#BaseUri = 'https://geo3.ggpht.com/cbk'
+#BaseUri = 'http://maps.google.com/cbk'
+BaseUri = 'https://geo3.ggpht.com/cbk'
 def GetIDByLoc(panoid = None, lat = None, lon = None, radius = 10):
 
     pano_info = GetPanoramaMetadata(lat=lat,lon=lon)

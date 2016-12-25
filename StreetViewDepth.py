@@ -6,13 +6,17 @@ import numpy.matlib as nm
 import scipy.misc
 import GoogleSV as GSV
 
+def WriteDepthMap(panoid, f_name):
+    depth = GetDepthMap(panoid = panoid)
+    DepthToNpy(depth, f_name)
+
 def GetDepthMap(panoid = None, lat = None, lon = None, radius = 10):
     if panoid is None:
         panoid = GSV.GetIDByLoc(lat = lat, lon = lon, radius = radius)
         if panoid is None:
             return None
     metadata = GSV.GetPanoramaMetadata(panoid = panoid)
-    return metadata
+    return CreateDepthMap(metadata)
 
 def CreateSphericalBuf(height, width):
     h = np.arange(height, dtype=np.float32)

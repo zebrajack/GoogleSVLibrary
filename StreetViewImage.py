@@ -6,7 +6,7 @@ import numpy as np
 import urllib2
 import GoogleSV as GSV
 
-test_id = 'pRANHWx41ZnTz5PsZs6JpA'
+test_id = 'Xql1WdJlK_2QUM4CV8Zmdg'
 BaseUri = 'http://maps.google.com/cbk'
 zoom_lv = 4
 ext = '.jpg'
@@ -14,24 +14,24 @@ ext = '.jpg'
 def GetPanoByID_full(ID, DIR):
     if not os.path.isdir(DIR):
         return False
-    subprocess.call('mkdir -p %s/buffer_%s'%(DIR, ID), shell=True)
+    subprocess.call('mkdir -p buffer_%s'%(ID), shell=True)
 
     row_range = range(7)
     col_range = range(13)
     for row in row_range:
         for col in col_range:
             data = GSV.GetPanoramaTile(ID, zoom_lv, col , row)
-            f = open('%s/buffer_%s/image_%d_%d.jpg'%(DIR, ID, row, col), 'wb')
+            f = open('buffer_%s/image_%d_%d.jpg'%(ID, row, col), 'wb')
             f.write(data)
             f.close()
     img = np.zeros([512*7, 512*13, 3], dtype=np.uint8)
     for row in row_range:
         for col in col_range:
-            patch = cv2.imread('%s/buffer_%s/image_%d_%d.jpg'%(DIR, ID, row, col))
+            patch = cv2.imread('buffer_%s/image_%d_%d.jpg'%(ID, row, col))
             img[row*512:(row+1)*512, col*512:(col+1)*512, :] = patch
     cv2.imwrite('%s/pano_%s.jpg'%(DIR, ID), img)
 
-    subprocess.call('rm -r %s/buffer_%s'%(DIR, ID), shell=True)
+    subprocess.call('rm -r buffer_%s'%(ID), shell=True)
             
 
 def GetPanoByID_0_180(ID, DIR):
@@ -105,4 +105,4 @@ def GetPanoByID_0_180(ID, DIR):
         return False
 
 #GetPanoByID_0_180(test_id,'.') 
-GetPanoByID_full(test_id,'.') 
+#GetPanoByID_full(test_id,'.') 
