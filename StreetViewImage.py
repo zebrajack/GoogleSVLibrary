@@ -4,32 +4,37 @@ import cv2
 import os
 import numpy as np
 import urllib2
+import GoogleSV as GSV
 
-test_id = 'X8dCxQEPFLJpXnntuKRFLA'
+test_id = 'pRANHWx41ZnTz5PsZs6JpA'
 BaseUri = 'http://maps.google.com/cbk'
 zoom_lv = 4
 ext = '.jpg'
-def GetUrlContent(url):
-    f = urllib2.urlopen(url)
-    data = f.read()
-    f.close()
-    return data
 
-def GetPanoramaTile(panoid, zoom, x, y): 
-    url =  '%s?'
-    url += 'output=tile'                    # tile output
-    url += '&panoid=%s'                     # panoid to retrieve
-    url += '&zoom=%s'                       # zoom level of tile
-    url += '&x=%i'                          # x position of tile
-    url += '&y=%i'                          # y position of tile
-    url += '&fover=2'                       # ???
-    url += '&onerr=3'                       # ???
-    url += '&renderer=spherical'            # standard speherical projection
-    url += '&v=4'                           # version
-    url = url % (BaseUri, panoid, zoom, x, y)
-    #print url
-    return GetUrlContent(url)
-def GetPanoByID(ID, DIR):
+def GetPanoByID_full(ID, DIR):
+    if not os.path.isdir(DIR):
+        return False
+    subprocess.call('mkdir -p %s/buffer_%s'%(DIR, ID), shell=True)
+
+    row_range = range(7)
+    col_range = range(13)
+    for row in row_range:
+        for col in col_range:
+            data = GSV.GetPanoramaTile(ID, zoom_lv, col , row)
+            f = open('%s/buffer_%s/image_%d_%d.jpg'%(DIR, ID, row, col), 'wb')
+            f.write(data)
+            f.close()
+    img = np.zeros([512*7, 512*13, 3], dtype=np.uint8)
+    for row in row_range:
+        for col in col_range:
+            patch = cv2.imread('%s/buffer_%s/image_%d_%d.jpg'%(DIR, ID, row, col))
+            img[row*512:(row+1)*512, col*512:(col+1)*512, :] = patch
+    cv2.imwrite('%s/pano_%s.jpg'%(DIR, ID), img)
+
+    subprocess.call('rm -r %s/buffer_%s'%(DIR, ID), shell=True)
+            
+
+def GetPanoByID_0_180(ID, DIR):
     if not os.path.isdir(DIR):
         return False
     try:
@@ -43,7 +48,7 @@ def GetPanoByID(ID, DIR):
         index = 0
         for row in row_range:
             for col in col_range:
-                data = GetPanoramaTile(ID, zoom_lv, col, row)
+                data = GSV.GetPanoramaTile(ID, zoom_lv, col, row)
                 #subprocess.call("wget '%s'  -O buffer_%s/tmp/image_%.2d%s"%(url, ID, index, ext), shell=True)
                 f = open('buffer_%s/tmp/image_%.2d%s'%(ID,index,ext), 'wb')
                 f.write(data)
@@ -67,10 +72,11 @@ def GetPanoByID(ID, DIR):
         subprocess.call('rm buffer_%s/tmp/*'%ID, shell=True)
         row_range = [2,3,4]
         col_range = [11,12,0,1]
+        #col_range = [1, 0 , 12, 11]
         index = 0
         for row in row_range:
             for col in col_range:
-                data = GetPanoramaTile(ID, zoom_lv, col, row)
+                data = GSV.GetPanoramaTile(ID, zoom_lv, col, row)
                 #subprocess.call("wget '%s'  -O buffer_%s/tmp/image_%.2d%s"%(url, ID, index, ext), shell=True)
                 f = open('buffer_%s/tmp/image_%.2d%s'%(ID,index,ext), 'wb')
                 f.write(data)
@@ -97,4 +103,6 @@ def GetPanoByID(ID, DIR):
     except:
         subprocess.call('rm -r buffer_%s/'%ID, shell=True)
         return False
-#GetPanoByID(test_id,'.') 
+
+#GetPanoByID_0_180(test_id,'.') 
+GetPanoByID_full(test_id,'.') 

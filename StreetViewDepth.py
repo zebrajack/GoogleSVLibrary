@@ -5,7 +5,6 @@ import numpy as np
 import numpy.matlib as nm
 import scipy.misc
 import GoogleSV as GSV
-import GetPanoByID as GBI
 
 def GetDepthMap(panoid = None, lat = None, lon = None, radius = 10):
     if panoid is None:
@@ -14,23 +13,7 @@ def GetDepthMap(panoid = None, lat = None, lon = None, radius = 10):
             return None
     metadata = GSV.GetPanoramaMetadata(panoid = panoid)
     return metadata
-'''
-def CreateSphericalBuf(height, width):
-    h = np.arange(height)
-    theta = (height - h) / height * np.pi
-    sin_theta = nm.repmat(np.sin(theta), width, 1).T
-    cos_theta = nm.repmat(np.cos(theta), width, 1).T
-    w = np.arange(width)
-    phi = (width - w) / width * 2 * np.pi + np.pi / 2
-    sin_phi = nm.repmat(np.sin(phi), height, 1)
-    cos_phi = nm.repmat(np.cos(phi), height, 1)
-    v = np.zeros((height, width, 3))
-    v[:, :, 0] = sin_theta * cos_phi
-    v[:, :, 1] = sin_theta * sin_phi
-    v[:, :, 2] = cos_theta
-    #return v.reshape([height*width, 3])
-    return v
-'''
+
 def CreateSphericalBuf(height, width):
     h = np.arange(height, dtype=np.float32)
     theta = (height - 1 - h) / height * np.pi
@@ -114,6 +97,9 @@ def DepthToImage(depth):
     #'''
     scipy.misc.imsave('depth.png', depth_map)
 
+def DepthToNpy(depth, store_name):
+    np.save(store_name, depth)
+
 if __name__ == '__main__':
     #CreateSphericalBuf(256, 512)
     #exit()
@@ -121,11 +107,4 @@ if __name__ == '__main__':
     test_id = 'pRANHWx41ZnTz5PsZs6JpA'
     data  = GSV.GetPanoramaMetadata(panoid = test_id)
     a = CreateDepthMap(data)
-    #a = SphericalToEqirectangular(a)
-    #exit()
-    #DepthToImage(cv2.resize(a.reshape([256, 512]), (6656, 3328)))
-    DepthToImage(a)
-    #GBI.GetPanoByID(test_id, '.')
-    #print data.DepthHeader['numPlanes']
-    #print len(data.DepthMapPlanes)
-    #cv2.imwrite('GG.jpg', a)
+    DepthToNpy(a, './G.npy')
