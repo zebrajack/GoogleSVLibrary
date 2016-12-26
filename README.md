@@ -2,6 +2,15 @@
 ## Introduction
 This is python package to query Google Street View Image and Depth map.
 
+### Panorama
+Image Panorama is a 3328 x 6656 image.
+<center><img src="src/pano.jpg"></center>
+
+### Depth Map
+Depth MAp is a 256 x 512 numpy array.
+<center><img src="src/image.jpg"></center>
+<center><img src="src/depth.png"></center>
+
 ### Usage
 Panorama is 3328 x 6656 image. <br>
 Depth is 256 x 512 numpy array.
