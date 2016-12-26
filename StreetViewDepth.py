@@ -79,7 +79,7 @@ def CreateDepthMap(data):
             print 'GG'
         normal_vector = np.array([plane['nx'], plane['ny'], plane['nz']], dtype=np.float32)
         depth_map[plane_indices==plane_index] =  \
-        plane['d'] / np.dot(spherical_buf[plane_indices==plane_index, :], normal_vector)
+        np.abs(plane['d'] / np.dot(spherical_buf[plane_indices==plane_index, :], normal_vector))
         #depth_map[plane_indices==plane_index] = space1[plane_index]
         #depth_map[plane_indices==plane_index, :] = np.array([space1[plane_index], space2[plane_index], space3[plane_index]])
     return depth_map.reshape([height, width])
